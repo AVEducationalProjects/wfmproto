@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>31806e30-f619-49aa-930d-599604d9eb4e</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\js\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.6.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptModuleKind>System</TypeScriptModuleKind>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
+    <TypeScriptOutFile>wwwroot\js\app.js</TypeScriptOutFile>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot></TypeScriptSourceRoot>
+  </PropertyGroup>
+
+</Project>
