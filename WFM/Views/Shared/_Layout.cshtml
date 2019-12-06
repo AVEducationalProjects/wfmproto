@@ -41,17 +41,7 @@
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="~/lib/systemjs/system.js"></script>
-    <script src="~/lib/systemjs/extras/named-register.js"></script>
-
-    <script type="text/javascript">
-        System.import('/js/app.js').then(function (m) {
-            System.import('main');
-        });
-    </script>
+    <script src="~/js/bpdiagram.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

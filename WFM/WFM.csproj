@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <Sdk Name="Yarn.MSBuild" Version="1.16.0" />
+
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>31806e30-f619-49aa-930d-599604d9eb4e</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+
+  <!-- YARN -->
+
+  <PropertyGroup>
+    <YarnWorkingDir>$(MSBuildProjectDirectory)</YarnWorkingDir>
+    <YarnBuildCommand>run build-prod</YarnBuildCommand>
+    <YarnBuildCommand Condition="'$(Configuration)'=='Debug'">run build-dev</YarnBuildCommand>
+  </PropertyGroup>
+
+  <Target Name="YarnInstall" BeforeTargets="YarnBuild">
+    <Yarn Command="install --non-interactive" WorkingDirectory="$(YarnWorkingDir)" />
+  </Target>
+  
+  <ItemGroup>
+    <Content Remove="package.json" />
+    <None Include="package.json" />
+
+    <Content Remove="tsconfig.json" />
+    <None Include="tsconfig.json" />
+
+    <None Remove=".gitignore" />
+
+    <None Remove="Scripts\BPDiagram\Model.ts" />
+
+    <None Remove="webpack.config.js" />
+  </ItemGroup>
+
+  <!-- /YARN -->
+
+  <!-- Visual Studio FastUpToDateCheck strategy configuration. See more here https://stackoverflow.com/questions/50881272/how-can-i-get-vs-to-consider-my-project-dirty-when-only-an-exe-content-item-i/50902989#50902989 -->
+  <ItemGroup>
+    <UpToDateCheckInput Include="package.json" />
+    <UpToDateCheckInput Include="webpack.config.*.js" />
+    <UpToDateCheckOutput Include="wwwroot\bundles\*" />
+    <UpToDateCheckInput Include="**\*.ts" />
+    <UpToDateCheckInput Include="**\*.scss" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Scripts\BPDiagram\Model.ts" />
+    <UpToDateCheckInput Remove="webpack.config.dev.js" />
+    <UpToDateCheckInput Remove="webpack.config.prod.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="webpack.config.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\BPDiagram\model.ts" />
+  </ItemGroup>
+
+</Project>
