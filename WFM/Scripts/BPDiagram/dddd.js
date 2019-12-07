@@ -101,20 +101,20 @@ function resetMouseVars() {
 //// update force layout (called automatically each iteration)
 //function tick() {
 //    // draw directed edges with proper padding from node centers
-//    path.attr('d', (d) => {
-//        const deltaX = d.target.x - d.source.x;
-//        const deltaY = d.target.y - d.source.y;
-//        const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-//        const normX = deltaX / dist;
-//        const normY = deltaY / dist;
-//        const sourcePadding = d.left ? 17 : 12;
-//        const targetPadding = d.right ? 17 : 12;
-//        const sourceX = d.source.x + (sourcePadding * normX);
-//        const sourceY = d.source.y + (sourcePadding * normY);
-//        const targetX = d.target.x - (targetPadding * normX);
-//        const targetY = d.target.y - (targetPadding * normY);
+////    path.attr('d', (d) => {
+////        const deltaX = d.target.x - d.source.x;
+////        const deltaY = d.target.y - d.source.y;
+////        const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+////        const normX = deltaX / dist;
+////        const normY = deltaY / dist;
+////        const sourcePadding = d.left ? 17 : 12;
+////        const targetPadding = d.right ? 17 : 12;
+////        const sourceX = d.source.x + (sourcePadding * normX);
+////        const sourceY = d.source.y + (sourcePadding * normY);
+////        const targetX = d.target.x - (targetPadding * normX);
+////        const targetY = d.target.y - (targetPadding * normY);
 
-//        return `M${sourceX},${sourceY}L${targetX},${targetY}`;
+////        return `M${sourceX},${sourceY}L${targetX},${targetY}`;
 //    });
 
 //    circle.attr('transform', (d) => `translate(${d.x},${d.y})`);

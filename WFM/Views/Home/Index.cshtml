@@ -4,8 +4,20 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <svg id="dia" style="width:960px;height:500px;">
-
+    <svg id="dia"
+         xmlns="http://www.w3.org/2000/svg"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:xhtml="http://www.w3.org/1999/xhtml"
+         style="width:100%;height:700px;border-width:1px;border-color:black;border-style:solid;">
     </svg>
-    <button onclick="BPDiagram('#dia')">Make</button>
 </div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            BPDiagram("#dia");
+        });
+    </script>
+
+}

@@ -10,7 +10,7 @@ var BPNodeType;
 })(BPNodeType = exports.BPNodeType || (exports.BPNodeType = {}));
 ;
 var BPNode = /** @class */ (function () {
-    function BPNode(type, name, id, x, y) {
+    function BPNode(type, name, x, y, id) {
         this.id = id || guid_typescript_1.Guid.create();
         this.x = x || 0;
         this.y = y || 0;
@@ -22,16 +22,22 @@ var BPNode = /** @class */ (function () {
 exports.BPNode = BPNode;
 ;
 var BPEdge = /** @class */ (function () {
-    function BPEdge() {
+    function BPEdge(source, target) {
+        this.source = source;
+        this.target = target;
     }
     return BPEdge;
 }());
 exports.BPEdge = BPEdge;
 var BPGraph = /** @class */ (function () {
-    function BPGraph() {
+    function BPGraph(width, height) {
+        var startx = (width || 800) / 2;
+        var starty = 50;
+        var endx = startx;
+        var endy = (height || 400) - 45;
         this.nodes = [
-            new BPNode(BPNodeType.Start, "start"),
-            new BPNode(BPNodeType.End, "end")
+            new BPNode(BPNodeType.Start, "start", startx, starty),
+            new BPNode(BPNodeType.End, "end", endx, endy)
         ];
         this.edges = [];
     }

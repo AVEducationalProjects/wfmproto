@@ -75,6 +75,10 @@ body {
 
 /*  Diagram
 ---------------------------------------------*/
+.diagram-tools{
+
+}
+
 svg {
     background-color: #FFF;
     cursor: default;

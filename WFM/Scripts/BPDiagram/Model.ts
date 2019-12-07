@@ -8,7 +8,7 @@ export class BPNode {
     public x: number;
     public y: number;
 
-    constructor(type: BPNodeType, name: string, id?: Guid, x?: number, y?: number) {
+    constructor(type: BPNodeType, name: string, x?: number, y?: number, id?: Guid) {
         this.id = id || Guid.create();
         this.x = x || 0;
         this.y = y || 0;
@@ -21,16 +21,27 @@ export class BPNode {
 export class BPEdge {
     public source: BPNode;
     public target: BPNode;
+
+    constructor(source?: BPNode, target?: BPNode) {
+        this.source = source;
+        this.target = target;
+    }
 }
 
 export class BPGraph {
     public nodes: BPNode[];
     public edges: BPEdge[];
 
-    constructor() {
+    constructor(width?: number, height?: number) {
+
+        let startx = (width || 800) / 2;
+        let starty = 50;
+        let endx = startx;
+        let endy = (height || 400) - 45;
+
         this.nodes = [
-            new BPNode(BPNodeType.Start, "start"),
-            new BPNode(BPNodeType.End, "end")
+            new BPNode(BPNodeType.Start, "start", startx, starty),
+            new BPNode(BPNodeType.End, "end", endx, endy)
         ];
         this.edges = [];
     }
