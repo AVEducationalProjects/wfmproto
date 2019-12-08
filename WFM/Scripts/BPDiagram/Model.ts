@@ -5,15 +5,18 @@ export class BPNode {
     public id: Guid;
     public name: string;
     public type: BPNodeType;
+    public duration: number;
+    public skills: string;
     public x: number;
     public y: number;
 
-    constructor(type: BPNodeType, name: string, x?: number, y?: number, id?: Guid) {
+    constructor(type: BPNodeType, name: string, duration?: number, skills?: string, x?: number, y?: number, id?: Guid) {
         this.id = id || Guid.create();
         this.x = x || 0;
         this.y = y || 0;
 
         this.name = name;
+        this.duration = duration;
         this.type = type;
     }
 };
@@ -21,10 +24,12 @@ export class BPNode {
 export class BPEdge {
     public source: BPNode;
     public target: BPNode;
+    public resolution: string;
 
-    constructor(source?: BPNode, target?: BPNode) {
+    constructor(source?: BPNode, target?: BPNode, resolution?: string) {
         this.source = source;
         this.target = target;
+        this.resolution = resolution;
     }
 }
 
@@ -40,8 +45,8 @@ export class BPGraph {
         let endy = (height || 400) - 45;
 
         this.nodes = [
-            new BPNode(BPNodeType.Start, "start", startx, starty),
-            new BPNode(BPNodeType.End, "end", endx, endy)
+            new BPNode(BPNodeType.Start, "start", null, null, startx, starty),
+            new BPNode(BPNodeType.End, "end", null, null, endx, endy)
         ];
         this.edges = [];
     }

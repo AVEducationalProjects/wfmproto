@@ -53,9 +53,14 @@ class BPDiagramComponent {
         this.edgeFigures = this.svg.append('svg:g').selectAll('path');
         this.nodeFigures = this.svg.append('svg:g').selectAll('g');
 
+        let svg = this.svg.selectAll("g");
         this.svg
             .on('contextmenu', () => { d3.event.preventDefault(); })
-            .on('mousedown', this.svgMouseDown());
+            .on('mousedown', this.svgMouseDown())
+            .call(d3.zoom().scaleExtent([0.1, 10])
+                .on("zoom", function () {
+                    svg.attr("transform", d3.event.transform);
+                }));
     }
 
     /**
@@ -208,7 +213,7 @@ class BPDiagramComponent {
                 text.attr("x", -textWidth / 2).attr("width", textWidth);
                 rect.attr("x", -textWidth / 2 - 5).attr("width", textWidth + 10);
             })
-            
+
 
         // remove old nodes
         diagram.nodeFigures.exit().remove();
@@ -282,17 +287,34 @@ class BPDiagramComponent {
     private updatePropertiesPanel() {
         this.propertiesPanel.selectAll("*").remove();
 
+        let form = this.propertiesPanel.append("form");
+
         let diagram = this;
         if (this.selectedEdge == null && this.selectedNode == null) {
-            this.propertiesPanel
-                .append("h5")
-                .text("Ничего не выбрано");
+            form.append("h5").text("Ничего не выбрано");
         }
         else if (this.selectedEdge != null) {
             let edge: BPEdge = this.selectedEdge;
 
-            this.propertiesPanel
-                .append("button")
+            var formGroup = form.append("div")
+                .attr("class", "form-group");
+
+            formGroup.append("label")
+                .attr("for", "nodeName")
+                .text("Резолюция");
+
+            formGroup.append("input")
+                .attr("id", "nodeName")
+                .attr("type", "text")
+                .attr("value", edge.resolution)
+                .attr("class", "form-control")
+                .on("input", function () {
+                    diagram.selectedEdge.resolution = this.value;
+                    diagram.update(false);
+                });
+
+            form.append("hr");
+            form.append("button")
                 .attr("class", "btn btn-danger")
                 .on("click", () => {
                     diagram.graph.deleteEdge(edge);
@@ -305,8 +327,16 @@ class BPDiagramComponent {
             let node: BPNode = this.selectedNode;
 
             if (node.type != BPNodeType.Start && node.type != BPNodeType.End) {
-                this.propertiesPanel
-                    .append("input")
+
+                var formGroup = form.append("div")
+                    .attr("class", "form-group");
+
+                formGroup.append("label")
+                    .attr("for", "nodeName")
+                    .text("Название");
+
+                formGroup.append("input")
+                    .attr("id", "nodeName")
                     .attr("type", "text")
                     .attr("value", node.name)
                     .attr("class", "form-control")
@@ -315,8 +345,43 @@ class BPDiagramComponent {
                         diagram.update(false);
                     });
 
-                this.propertiesPanel
-                    .append("button")
+                formGroup = form.append("div")
+                    .attr("class", "form-group");
+
+                formGroup.append("label")
+                    .attr("for", "nodeDuration")
+                    .text(node.type == BPNodeType.Action ? "Плановая трудоемкость" : "Ожидаемый срок");
+
+                formGroup.append("input")
+                    .attr("id", "nodeDuration")
+                    .attr("type", "number")
+                    .attr("min", "0.5")
+                    .attr("step", "0.5")
+                    .attr("value", node.duration)
+                    .attr("class", "form-control")
+                    .on("input", function () {
+                        diagram.selectedNode.duration = this.value;
+                    });
+
+                if (node.type == BPNodeType.Action) {
+                    formGroup = form.append("div")
+                        .attr("class", "form-group");
+
+                    formGroup.append("label")
+                        .attr("for", "nodeSkills")
+                        .text("Требуемые компетенции");
+
+                    formGroup.append("textarea")
+                        .attr("id", "nodeSkills")
+                        .attr("rows", "3")
+                        .attr("class", "form-control")
+                        .on("input", function () {
+                            diagram.selectedNode.skills = this.value;
+                        });
+                }
+
+                form.append("hr");
+                form.append("button")
                     .attr("class", "btn btn-danger")
                     .on("click", () => {
                         diagram.graph.deleteNode(node);
@@ -326,8 +391,7 @@ class BPDiagramComponent {
                     })
                     .text("Удалить вершину");
             } else {
-                this.propertiesPanel
-                    .append("h5")
+                form.append("h5")
                     .text("Этот узел нельзя изменить");
             }
         }
@@ -441,11 +505,11 @@ class BPDiagramComponent {
 
             switch (diagram.state) {
                 case BPDiagramComponentState.AddAction:
-                    diagram.graph.nodes.push(new BPNode(BPNodeType.Action, "Новое действие", coords[0], coords[1]));
+                    diagram.graph.nodes.push(new BPNode(BPNodeType.Action, "Новое действие", 1, null, coords[0], coords[1]));
                     diagram.state = BPDiagramComponentState.View;
                     break;
                 case BPDiagramComponentState.AddEvent:
-                    diagram.graph.nodes.push(new BPNode(BPNodeType.Event, "Новое событие", coords[0], coords[1]));
+                    diagram.graph.nodes.push(new BPNode(BPNodeType.Event, "Новое событие", null, null, coords[0], coords[1]));
                     diagram.state = BPDiagramComponentState.View;
                     break;
             }

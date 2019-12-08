@@ -10,11 +10,12 @@ var BPNodeType;
 })(BPNodeType = exports.BPNodeType || (exports.BPNodeType = {}));
 ;
 var BPNode = /** @class */ (function () {
-    function BPNode(type, name, x, y, id) {
+    function BPNode(type, name, duration, skills, x, y, id) {
         this.id = id || guid_typescript_1.Guid.create();
         this.x = x || 0;
         this.y = y || 0;
         this.name = name;
+        this.duration = duration;
         this.type = type;
     }
     return BPNode;
@@ -22,9 +23,10 @@ var BPNode = /** @class */ (function () {
 exports.BPNode = BPNode;
 ;
 var BPEdge = /** @class */ (function () {
-    function BPEdge(source, target) {
+    function BPEdge(source, target, resolution) {
         this.source = source;
         this.target = target;
+        this.resolution = resolution;
     }
     return BPEdge;
 }());
@@ -36,8 +38,8 @@ var BPGraph = /** @class */ (function () {
         var endx = startx;
         var endy = (height || 400) - 45;
         this.nodes = [
-            new BPNode(BPNodeType.Start, "start", startx, starty),
-            new BPNode(BPNodeType.End, "end", endx, endy)
+            new BPNode(BPNodeType.Start, "start", null, null, startx, starty),
+            new BPNode(BPNodeType.End, "end", null, null, endx, endy)
         ];
         this.edges = [];
     }
