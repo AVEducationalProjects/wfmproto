@@ -75,11 +75,10 @@ body {
 
 /*  Diagram
 ---------------------------------------------*/
-.tools-panel{
+.tools-panel {
 }
 
-.properties-panel{
-
+.properties-panel {
 }
 
 svg {
@@ -92,49 +91,87 @@ svg {
     user-select: none;
 }
 
-    svg:not(.active):not(.ctrl) {
+    svg:not(.active):not(.nodectl) {
         cursor: crosshair;
     }
 
+g.nodectl{
+    cursor: pointer;
+}
+
+g.nodectl.start-node circle {
+    fill: #fff;
+    stroke: #555;
+    stroke-width: 2px;
+}
+
+g.nodectl.start-node.selected circle {
+    fill: #bbb;
+    stroke-width: 4px;
+}
+
+g.nodectl.end-node circle {
+    fill: #fff;
+    stroke: #555;
+    stroke-width: 2px;
+}
+
+g.nodectl.end-node.selected circle {
+    fill: #bbb;
+    stroke-width: 4px;
+}
+
+g.nodectl.action-node rect {
+    fill: #fff;
+    stroke: #555;
+    stroke-width: 2px;
+}
+
+g.nodectl.action-node.selected rect {
+    fill: #bbb;
+    stroke-width: 4px;
+}
+
+g.nodectl.event-node rect {
+    fill: #fff;
+    stroke: #555;
+    stroke-width: 2px;
+    stroke-dasharray: 6,2;
+}
+
+g.nodectl.event-node.selected rect {
+    fill: #bbb;
+    stroke-width: 4px;
+}
+
+text {
+    font: 12px Roboto;
+    pointer-events: none;
+}
+
+
 path.link {
     fill: none;
-    stroke: #000;
-    stroke-width: 4px;
+    stroke: #888;
+    stroke-width: 3px;
     cursor: default;
 }
 
-svg:not(.active):not(.ctrl) path.link {
+svg path.link {
     cursor: pointer;
 }
 
 path.link.selected {
-    stroke-dasharray: 10,2;
+    stroke-width: 4px;
+    stroke: #555;
 }
 
 path.link.dragline {
+    stroke-dasharray: 6,2;
     pointer-events: none;
+    stroke: #AAA;
 }
 
 path.link.hidden {
     stroke-width: 0;
 }
-
-circle.node {
-    stroke-width: 1.5px;
-    cursor: pointer;
-}
-
-    circle.node.reflexive {
-        stroke: #000 !important;
-        stroke-width: 2.5px;
-    }
-
-text {
-    font: 12px sans-serif;
-    pointer-events: none;
-}
-
-    text.id {
-        text-anchor: middle;
-        font-weight: bold;
-    }

@@ -204,8 +204,7 @@ class BPDiagramComponent {
         // update existing nodes 
         diagram.nodeFigures
             .attr("transform", (d: BPNode) => "translate(" + [d.x, d.y] + ")")
-            .select('circle')
-            .style('fill', (d: BPNode) => (d === this.selectedNode) ? color.brighter().toString() : color);
+            .classed('selected', (d: BPNode) => d == this.selectedNode);
 
         // remove old nodes
         diagram.nodeFigures.exit().remove();
@@ -277,6 +276,10 @@ class BPDiagramComponent {
      * @param g
      */
     private createActionNodes(g) {
+        g.classed("nodectl", true);
+        g.classed("action-node", true);
+        g.classed("selected", (d) => d == this.selectedNode);
+
         var textWidth = 0;
         g.append('svg:text')
             .text((d) => d.name)
@@ -292,9 +295,7 @@ class BPDiagramComponent {
             .attr("width", textWidth + 10)
             .attr("height", 30)
             .attr("rx", 10)
-            .attr("ry", 10)
-            .style('fill', d3.rgb(255, 255, 255))
-            .style('stroke', () => color.darker().toString());
+            .attr("ry", 10);
     }
 
     /**
@@ -302,6 +303,10 @@ class BPDiagramComponent {
      * @param g
      */
     private createEventNodes(g) {
+        g.classed("nodectl", true);
+        g.classed("event-node", true);
+        g.classed("selected", (d) => d == this.selectedNode);
+
         var textWidth = 0;
         g.append('svg:text')
             .text((d) => d.name)
@@ -317,9 +322,7 @@ class BPDiagramComponent {
             .attr("width", textWidth + 10)
             .attr("height", 30)
             .attr("rx", 10)
-            .attr("ry", 10)
-            .style('fill', d3.rgb(255, 255, 255))
-            .style('stroke', () => color.darker().toString());
+            .attr("ry", 10);
     }
 
     /**
@@ -327,11 +330,12 @@ class BPDiagramComponent {
      * @param g
      */
     private createStartNodes(g) {
+        g.classed("nodectl", true);
+        g.classed("start-node", true);
+        g.classed("selected", (d) => d == this.selectedNode);
+
         g.append('svg:circle')
-            .attr('class', 'node')
-            .attr('r', 12)
-            .style('fill', (d: BPNode) => (d === this.selectedNode) ? color.brighter().toString() : color)
-            .style('stroke', () => color.darker().toString());
+            .attr('r', 12);
     }
 
     /**
@@ -339,17 +343,15 @@ class BPDiagramComponent {
      * @param g
      */
     private createEndNodes(g) {
-        g.append('svg:circle')
-            .attr('class', 'node')
-            .attr('r', 16)
-            .style('fill', d3.rgb(255, 255, 255))
-            .style('stroke', () => color.darker().toString());
+        g.classed("nodectl", true);
+        g.classed("end-node", true);
+        g.classed("selected", (d) => d == this.selectedNode);
 
         g.append('svg:circle')
-            .attr('class', 'node')
-            .attr('r', 12)
-            .style('fill', (d: BPNode) => (d === this.selectedNode) ? color.brighter().toString() : color)
-            .style('stroke', () => color.darker().toString());
+            .attr('r', 12);
+
+        g.append('svg:circle')
+            .attr('r', 6);
     }
 
     private svgMouseDown() {
