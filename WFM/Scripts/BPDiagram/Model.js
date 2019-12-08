@@ -41,6 +41,17 @@ var BPGraph = /** @class */ (function () {
         ];
         this.edges = [];
     }
+    BPGraph.prototype.deleteEdge = function (edge) {
+        var idx = this.edges.indexOf(edge);
+        this.edges.splice(idx, 1);
+    };
+    BPGraph.prototype.deleteNode = function (node) {
+        var idx = this.nodes.indexOf(node);
+        this.nodes.splice(idx, 1);
+        var graph = this;
+        this.edges.filter(function (e) { return e.source == node || e.target == node; })
+            .forEach(function (e) { return graph.deleteEdge(e); });
+    };
     return BPGraph;
 }());
 exports.BPGraph = BPGraph;

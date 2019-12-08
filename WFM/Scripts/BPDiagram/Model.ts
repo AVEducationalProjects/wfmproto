@@ -45,4 +45,18 @@ export class BPGraph {
         ];
         this.edges = [];
     }
+
+    public deleteEdge(edge: BPEdge) {
+        let idx = this.edges.indexOf(edge);
+        this.edges.splice(idx, 1);
+    }
+
+    public deleteNode(node: BPNode) {
+        let idx = this.nodes.indexOf(node);
+        this.nodes.splice(idx, 1);
+
+        let graph = this;
+        this.edges.filter((e: BPEdge) => e.source == node || e.target == node)
+            .forEach((e: BPEdge) => graph.deleteEdge(e))
+    }
 }

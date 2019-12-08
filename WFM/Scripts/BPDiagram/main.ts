@@ -1,14 +1,9 @@
 ﻿import * as d3 from 'd3';
 import { BPGraph, BPEdge, BPNode, BPNodeType } from './model';
 
-const color = d3.rgb(60, 60, 60);
-
-const toolsPanelHeight = 40;
-
 enum BPDiagramComponentState { View, AddAction, AddEvent, AddEdge }
 
 class BPDiagramComponent {
-
     private state: BPDiagramComponentState;
 
     private graph: BPGraph;
@@ -60,8 +55,7 @@ class BPDiagramComponent {
 
         this.svg
             .on('contextmenu', () => { d3.event.preventDefault(); })
-            .on('mousedown', this.svgMouseDown())
-            .on('mousemove', this.svgMouseMove());
+            .on('mousedown', this.svgMouseDown());
     }
 
     /**
@@ -73,7 +67,6 @@ class BPDiagramComponent {
         let panel = d3.select(this.svg.node().parentNode)
             .insert("div", ":first-child")
             .attr("class", "tools-panel col-md-12")
-            .style("height", `${toolsPanelHeight}px`)
             .append("div")
             .attr("class", "btn-group")
             .attr("role", "group");
@@ -148,7 +141,7 @@ class BPDiagramComponent {
     /**
      * Update graph (called when needed)
      */
-    private update() {
+    private update(updateProps: boolean = true) {
         let diagram = this;
 
         // update existing edges
@@ -192,8 +185,9 @@ class BPDiagramComponent {
 
                 return `M${sourceX},${sourceY}L${targetX},${targetY}`;
             })
-            .on('mousedown', (d) => {
-                diagram.selectedEdge = (d === diagram.selectedEdge) ? null : d;
+            .on('mousedown', (d: BPEdge) => {
+                if (d != diagram.selectedEdge)
+                    diagram.selectEdge(d);
                 diagram.update();
             })
             .merge(diagram.edgeFigures);
@@ -204,7 +198,17 @@ class BPDiagramComponent {
         // update existing nodes 
         diagram.nodeFigures
             .attr("transform", (d: BPNode) => "translate(" + [d.x, d.y] + ")")
-            .classed('selected', (d: BPNode) => d == this.selectedNode);
+            .classed('selected', (d: BPNode) => d == this.selectedNode)
+            .select("text")
+            .text((d: BPNode) => d.name)
+            .each(function (d) {
+                let textWidth = this.getComputedTextLength();
+                let text = d3.select(this);
+                let rect = d3.select(this.parentNode).select("rect");
+                text.attr("x", -textWidth / 2).attr("width", textWidth);
+                rect.attr("x", -textWidth / 2 - 5).attr("width", textWidth + 10);
+            })
+            
 
         // remove old nodes
         diagram.nodeFigures.exit().remove();
@@ -220,7 +224,7 @@ class BPDiagramComponent {
                     if (diagram.state != BPDiagramComponentState.AddEdge &&
                         diagram.state != BPDiagramComponentState.View) return;
 
-                    diagram.selectedNode = d;
+                    diagram.selectNode(d);
 
                     if (diagram.state == BPDiagramComponentState.AddEdge) {
                         diagram.dragLine
@@ -269,6 +273,82 @@ class BPDiagramComponent {
         this.createEventNodes(g.filter(d => d.type == BPNodeType.Event));
 
         diagram.nodeFigures = g.merge(this.nodeFigures);
+
+        // update tools panel
+        if (updateProps)
+            this.updatePropertiesPanel();
+    }
+
+    private updatePropertiesPanel() {
+        this.propertiesPanel.selectAll("*").remove();
+
+        let diagram = this;
+        if (this.selectedEdge == null && this.selectedNode == null) {
+            this.propertiesPanel
+                .append("h5")
+                .text("Ничего не выбрано");
+        }
+        else if (this.selectedEdge != null) {
+            let edge: BPEdge = this.selectedEdge;
+
+            this.propertiesPanel
+                .append("button")
+                .attr("class", "btn btn-danger")
+                .on("click", () => {
+                    diagram.graph.deleteEdge(edge);
+                    diagram.selectedEdge = null;
+                    diagram.update();
+                })
+                .text("Удалить ребро");
+        }
+        else if (this.selectedNode != null) {
+            let node: BPNode = this.selectedNode;
+
+            if (node.type != BPNodeType.Start && node.type != BPNodeType.End) {
+                this.propertiesPanel
+                    .append("input")
+                    .attr("type", "text")
+                    .attr("value", node.name)
+                    .attr("class", "form-control")
+                    .on("input", function () {
+                        diagram.selectedNode.name = this.value;
+                        diagram.update(false);
+                    });
+
+                this.propertiesPanel
+                    .append("button")
+                    .attr("class", "btn btn-danger")
+                    .on("click", () => {
+                        diagram.graph.deleteNode(node);
+
+                        diagram.selectedNode = null;
+                        diagram.update();
+                    })
+                    .text("Удалить вершину");
+            } else {
+                this.propertiesPanel
+                    .append("h5")
+                    .text("Этот узел нельзя изменить");
+            }
+        }
+    }
+
+    /**
+     * Select node
+     * @param node
+     */
+    private selectNode(node: BPNode) {
+        this.selectedEdge = null;
+        this.selectedNode = node;
+    }
+
+    /**
+     * Select node
+     * @param node
+     */
+    private selectEdge(edge: BPEdge) {
+        this.selectedEdge = edge;
+        this.selectedNode = null;
     }
 
     /**
@@ -371,15 +451,6 @@ class BPDiagramComponent {
             }
 
             diagram.update();
-        }
-    }
-
-    private svgMouseMove() {
-        let diagram = this;
-        return function () {
-            if (diagram.state != BPDiagramComponentState.AddEdge || diagram.selectedNode == null) return;
-
-
         }
     }
 }
