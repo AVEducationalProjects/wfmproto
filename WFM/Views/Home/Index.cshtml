@@ -2,8 +2,13 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+<div class="row">
+    <div class="col-12">
+        <h1 class="h4">Редактирование бизнес-процесса</h1>
+    </div>
+</div>
+
+<div class="row">
     <svg id="dia"
          xmlns="http://www.w3.org/2000/svg"
          xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -13,6 +18,7 @@
 </div>
 
 @section Scripts{
+    <script src="~/js/bpdiagram.js"></script>
 
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function () {

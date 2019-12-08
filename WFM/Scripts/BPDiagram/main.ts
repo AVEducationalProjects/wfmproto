@@ -3,6 +3,8 @@ import { BPGraph, BPEdge, BPNode, BPNodeType } from './model';
 
 const color = d3.rgb(60, 60, 60);
 
+const toolsPanelHeight = 40;
+
 enum BPDiagramComponentState { View, AddAction, AddEvent, AddEdge }
 
 class BPDiagramComponent {
@@ -26,7 +28,6 @@ class BPDiagramComponent {
     }
 
     private svg;
-    private dragLine;
 
     private width: number;
     private height: number;
@@ -41,6 +42,87 @@ class BPDiagramComponent {
     private createControls(selector: string) {
         this.svg = d3.select(selector);
 
+        this.createPropertiesPanel();
+        this.createToolPanel();
+        this.svg
+            .attr("class", "col-md-9");
+
+        // calculate editor size
+        let svgRect = this.svg.node().getBoundingClientRect();
+        this.width = svgRect.width;
+        this.height = svgRect.height;
+
+        this.createFigureDefinitions();
+        this.createDragLine();
+
+        this.edgeFigures = this.svg.append('svg:g').selectAll('path');
+        this.nodeFigures = this.svg.append('svg:g').selectAll('g');
+
+        this.svg
+            .on('contextmenu', () => { d3.event.preventDefault(); })
+            .on('mousedown', this.svgMouseDown())
+            .on('mousemove', this.svgMouseMove());
+    }
+
+    /**
+     * Create toolbar
+     * */
+    private createToolPanel() {
+        let diagram = this;
+
+        let panel = d3.select(this.svg.node().parentNode)
+            .insert("div", ":first-child")
+            .attr("class", "tools-panel col-md-12")
+            .style("height", `${toolsPanelHeight}px`)
+            .append("div")
+            .attr("class", "btn-group")
+            .attr("role", "group");
+
+        panel.append("button")
+            .attr("class", "btn btn-secondary")
+            .text('Просмотр')
+            .on('click', () => {
+                diagram.state = BPDiagramComponentState.View;
+            });
+
+        panel.append("button")
+            .attr("class", "btn btn-secondary")
+            .text('Действие')
+            .on('click', () => {
+                diagram.state = BPDiagramComponentState.AddAction;
+            });
+
+        panel.append("button")
+            .attr("class", "btn btn-secondary")
+            .text('Событие')
+            .on('click', () => {
+                diagram.state = BPDiagramComponentState.AddEvent;
+            });
+
+        panel.append("button")
+            .attr("class", "btn btn-secondary")
+            .text('Связь')
+            .on('click', () => {
+                diagram.state = BPDiagramComponentState.AddEdge;
+            });
+    }
+
+    /**
+     * Creates properties pane
+     * */
+    private propertiesPanel;
+    private createPropertiesPanel() {
+        this.propertiesPanel = d3.select(this.svg.node().parentNode)
+            .append("div")
+            .attr("class", "col-md-3 properties-panel")
+            .style("height", `${this.height}px`);
+    }
+
+    /**
+     * Add definitions for reusable figures
+     * */
+    private createFigureDefinitions() {
+        // arrow
         this.svg.append('svg:defs').append('svg:marker')
             .attr('id', 'end-arrow')
             .attr('viewBox', '0 -5 10 10')
@@ -51,59 +133,16 @@ class BPDiagramComponent {
             .append('svg:path')
             .attr('d', 'M0,-5L10,0L0,5')
             .attr('fill', '#000');
+    }
 
-        let svgRect = this.svg.node().getBoundingClientRect();
-        this.width = svgRect.width;
-        this.height = svgRect.height;
-
-        this.edgeFigures = this.svg.append('svg:g').selectAll('path');
-        this.nodeFigures = this.svg.append('svg:g').selectAll('g');
-
+    /**
+     * Create temporary path for edge creation
+     * */
+    private dragLine;
+    private createDragLine() {
         this.dragLine = this.svg.append('svg:path')
             .attr('class', 'link dragline hidden')
             .attr('d', 'M0,0L0,0');
-
-        this.createToolPanel();
-
-        this.svg
-            .on('contextmenu', () => { d3.event.preventDefault(); })
-            .on('mousedown', this.svgMouseDown())
-            .on('mousemove', this.svgMouseMove());
-    }
-
-    private createToolPanel() {
-        let diagram = this;
-
-        let panel = this.svg.append("foreignObject")
-            .attr('x', (this.width - 400) / 2)
-            .attr('y', 0)
-            .attr('width', 400)
-            .attr('height', 60)
-            .append("xhtml:div");
-
-        panel.append("button")
-            .text('Просмотр')
-            .on('click', () => {
-                diagram.state = BPDiagramComponentState.View;
-            });
-
-        panel.append("button")
-            .text('Действие')
-            .on('click', () => {
-                diagram.state = BPDiagramComponentState.AddAction;
-            });
-
-        panel.append("button")
-            .text('Событие')
-            .on('click', () => {
-                diagram.state = BPDiagramComponentState.AddEvent;
-            });
-
-        panel.append("button")
-            .text('Связь')
-            .on('click', () => {
-                diagram.state = BPDiagramComponentState.AddEdge;
-            });
     }
 
     /**
@@ -238,18 +277,24 @@ class BPDiagramComponent {
      * @param g
      */
     private createActionNodes(g) {
-        g.append("svg:rect")
+        var textWidth = 0;
+        g.append('svg:text')
+            .text((d) => d.name)
+            .each(function (d) {
+                textWidth = this.getComputedTextLength();
+            })
+            .attr('x', -textWidth / 2)
+            .attr('y', 5);
+
+        g.insert("svg:rect", ":first-child")
+            .attr("x", -textWidth / 2 - 5)
+            .attr("y", -15)
+            .attr("width", textWidth + 10)
             .attr("height", 30)
-            .attr("width", 80)
             .attr("rx", 10)
             .attr("ry", 10)
             .style('fill', d3.rgb(255, 255, 255))
             .style('stroke', () => color.darker().toString());
-
-        g.append('svg:text')
-            .attr('x', 5)
-            .attr('y', 20)
-            .text((d) => d.name);
     }
 
     /**
@@ -257,18 +302,24 @@ class BPDiagramComponent {
      * @param g
      */
     private createEventNodes(g) {
-        g.append("svg:rect")
+        var textWidth = 0;
+        g.append('svg:text')
+            .text((d) => d.name)
+            .each(function (d) {
+                textWidth = this.getComputedTextLength();
+            })
+            .attr('x', -textWidth / 2)
+            .attr('y', 5);
+
+        g.insert("svg:rect", ":first-child")
+            .attr("x", -textWidth / 2 - 5)
+            .attr("y", -15)
+            .attr("width", textWidth + 10)
             .attr("height", 30)
-            .attr("width", 80)
             .attr("rx", 10)
             .attr("ry", 10)
             .style('fill', d3.rgb(255, 255, 255))
             .style('stroke', () => color.darker().toString());
-
-        g.append('svg:text')
-            .attr('x', 5)
-            .attr('y', 20)
-            .text((d) => d.name);
     }
 
     /**
