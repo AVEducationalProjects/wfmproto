@@ -354,3 +354,5 @@ MigrationBackup/
 /WFM/WFM/wwwroot/js
 /WFM/WFM/wwwroot/lib
 /WFM/wwwroot/lib
+/WFM/Scripts/BPDiagram/model.js
+/WFM/Scripts/BPDiagram/model.js.map

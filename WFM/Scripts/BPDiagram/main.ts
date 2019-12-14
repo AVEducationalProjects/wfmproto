@@ -81,6 +81,7 @@ class BPDiagramComponent {
             .text('Просмотр')
             .on('click', () => {
                 diagram.state = BPDiagramComponentState.View;
+                d3.event.preventDefault();
             });
 
         panel.append("button")
@@ -88,6 +89,7 @@ class BPDiagramComponent {
             .text('Действие')
             .on('click', () => {
                 diagram.state = BPDiagramComponentState.AddAction;
+                d3.event.preventDefault();
             });
 
         panel.append("button")
@@ -95,6 +97,7 @@ class BPDiagramComponent {
             .text('Событие')
             .on('click', () => {
                 diagram.state = BPDiagramComponentState.AddEvent;
+                d3.event.preventDefault();
             });
 
         panel.append("button")
@@ -102,6 +105,7 @@ class BPDiagramComponent {
             .text('Связь')
             .on('click', () => {
                 diagram.state = BPDiagramComponentState.AddEdge;
+                d3.event.preventDefault();
             });
     }
 
@@ -242,8 +246,8 @@ class BPDiagramComponent {
                 })
                 .on("drag", (d: BPNode) => {
                     if (diagram.state == BPDiagramComponentState.View && d instanceof BPNode) {
-                        d.x = d3.event.x;
-                        d.y = d3.event.y;
+                        d.x = Math.round(d3.event.x);
+                        d.y = Math.round(d3.event.y);
 
                         diagram.update();
                     } else if (diagram.state == BPDiagramComponentState.AddEdge && diagram.selectedNode != null) {
@@ -320,6 +324,7 @@ class BPDiagramComponent {
                     diagram.graph.deleteEdge(edge);
                     diagram.selectedEdge = null;
                     diagram.update();
+                    d3.event.preventDefault();
                 })
                 .text("Удалить ребро");
         }
@@ -388,6 +393,7 @@ class BPDiagramComponent {
 
                         diagram.selectedNode = null;
                         diagram.update();
+                        d3.event.preventDefault();
                     })
                     .text("Удалить вершину");
             } else {
@@ -505,11 +511,11 @@ class BPDiagramComponent {
 
             switch (diagram.state) {
                 case BPDiagramComponentState.AddAction:
-                    diagram.graph.nodes.push(new BPNode(BPNodeType.Action, "Новое действие", 1, null, coords[0], coords[1]));
+                    diagram.graph.nodes.push(new BPNode(BPNodeType.Action, "Новое действие", 1, null, Math.round(coords[0]), Math.round(coords[1])));
                     diagram.state = BPDiagramComponentState.View;
                     break;
                 case BPDiagramComponentState.AddEvent:
-                    diagram.graph.nodes.push(new BPNode(BPNodeType.Event, "Новое событие", null, null, coords[0], coords[1]));
+                    diagram.graph.nodes.push(new BPNode(BPNodeType.Event, "Новое событие", 0, null, Math.round(coords[0]), Math.round(coords[1])));
                     diagram.state = BPDiagramComponentState.View;
                     break;
             }

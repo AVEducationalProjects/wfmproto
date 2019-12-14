@@ -5,6 +5,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
+      - Mongo__Server=mongodb://mongo:27017
     ports:
       - "80"
       - "443"

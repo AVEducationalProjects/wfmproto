@@ -1,0 +1,54 @@
+﻿@model WFM.Models.DTO.BusinessProcess
+
+@{
+    ViewData["Title"] = "Создание нового бизнес-процесса";
+}
+
+<h4>Создание нового бизнес-процесса</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <input asp-for="Id" type="hidden" name="Id" />
+            <input asp-for="SerializedDiagram" type="hidden" name="SerializedDiagram" id="serializedDiagram" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Название бизнес-процесса</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <svg id="dia"
+                         xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         xmlns:xhtml="http://www.w3.org/1999/xhtml"
+                         style="width:100%;height:700px;border-width:1px;border-color:black;border-style:solid;">
+                    </svg>
+                </div>
+            </div>
+            <div class="form-group">
+                <input id="submit" type="submit" value="Создать" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/bpdiagram.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            let diagramData = JSON.parse($("#serializedDiagram").val());
+            let diagram = BPDiagram("#dia");
+            diagram.import(diagramData);
+
+            $("#submit").click(() => {
+                let data = diagram.export();
+                $("#serializedDiagram").val(JSON.stringify(data));
+            });
+        });
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
