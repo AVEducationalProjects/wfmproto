@@ -1,5 +1,10 @@
 ﻿import { Guid } from "guid-typescript";
-export enum BPNodeType { Start, Event, Action, End };
+export enum BPNodeType {
+    Start = "Start",
+    Event = "Event",
+    Action = "Action",
+    End = "End"
+};
 
 export class BPNode {
     public id: Guid;
@@ -33,6 +38,27 @@ export class BPEdge {
     }
 }
 
+export interface GraphDTOItemTransition {
+    id: string;
+    resolution: string;
+}
+
+export interface GraphDTOItem {
+    id: string;
+    name: string;
+    type: string;
+    duration: number;
+    skills: string;
+    x: number;
+    y: number;
+
+    transitions: GraphDTOItemTransition[];
+}
+
+export interface GraphDTO {
+    nodes: GraphDTOItem[];
+}
+
 export class BPGraph {
     public nodes: BPNode[];
     public edges: BPEdge[];
@@ -63,5 +89,61 @@ export class BPGraph {
         let graph = this;
         this.edges.filter((e: BPEdge) => e.source == node || e.target == node)
             .forEach((e: BPEdge) => graph.deleteEdge(e))
+    }
+
+    public exportData(): GraphDTO {
+        let result: GraphDTO = { nodes: [] };
+
+        for (var node of this.nodes) {
+            let itemDTO: GraphDTOItem = {
+                id: node.id.toString(),
+                name: node.name,
+                type: node.type.toString(),
+                duration: node.duration,
+                skills: node.skills,
+                x: node.x,
+                y: node.y,
+                transitions: []
+            };
+
+            this.edges.filter(e => e.source == node).forEach(e => {
+                let transition: GraphDTOItemTransition = {
+                    id: e.target.id.toString(),
+                    resolution: e.resolution
+                };
+                itemDTO.transitions.push(transition);
+            })
+
+            result.nodes.push(itemDTO);
+        }
+
+        return result;
+    }
+
+    public importData(data: GraphDTO) {
+        let nodes = [];
+        data.nodes.forEach(nodeDTO => {
+            nodes.push(new BPNode(
+                BPNodeType[nodeDTO.type],
+                nodeDTO.name,
+                nodeDTO.duration,
+                nodeDTO.skills,
+                nodeDTO.x,
+                nodeDTO.y,
+                Guid.parse(nodeDTO.id)));
+        });
+
+        let edges = [];
+        data.nodes.forEach(nodeDTO => nodeDTO.transitions.forEach(transition => {
+            let source: BPNode = nodes.find((n: BPNode) => n.id.equals(Guid.parse(nodeDTO.id)));
+            let target: BPNode = nodes.find((n: BPNode) => n.id.equals(Guid.parse(transition.id)));
+            edges.push(new BPEdge(
+                source,
+                target,
+                transition.resolution));
+        }));
+
+        this.nodes = nodes;
+        this.edges = edges;
     }
 }

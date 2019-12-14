@@ -1,39 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-  <Sdk Name="Yarn.MSBuild" Version="1.16.0" />
-
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UserSecretsId>31806e30-f619-49aa-930d-599604d9eb4e</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Yarn.MSBuild" Version="1.16.0" />
+  </ItemGroup>
 
   <!-- YARN -->
-
-  <PropertyGroup>
-    <YarnWorkingDir>$(MSBuildProjectDirectory)</YarnWorkingDir>
-    <YarnBuildCommand>run build-prod</YarnBuildCommand>
-    <YarnBuildCommand Condition="'$(Configuration)'=='Debug'">run build-dev</YarnBuildCommand>
-  </PropertyGroup>
-
-  <Target Name="YarnInstall" BeforeTargets="YarnBuild">
-    <Yarn Command="install --non-interactive" WorkingDirectory="$(YarnWorkingDir)" />
-  </Target>
-  
   <ItemGroup>
+    <None Remove=".gitignore" />
+    
     <Content Remove="package.json" />
     <None Include="package.json" />
 
     <Content Remove="tsconfig.json" />
     <None Include="tsconfig.json" />
 
-    <None Remove=".gitignore" />
-
-    <None Remove="Scripts\BPDiagram\Model.ts" />
-
-    <None Remove="webpack.config.js" />
+    <Content Remove="webpack.config.json" />
+    <None Include="webpack.config.js" />
   </ItemGroup>
+
+  <Target Name="YarnBuildComponents" Inputs="Scripts\BPDiagram\*.ts" Outputs="wwwroot\js\*.js">
+    <Yarn WorkingDirectory="$(MSBuildProjectDirectory" />
+    <Yarn Command="run build-prod" Condition="'$(Configuration)'=='Release'" WorkingDirectory="$(MSBuildProjectDirectory" />
+    <Yarn Command="run build-prod" Condition="'$(Configuration)'=='Debug'" WorkingDirectory="$(MSBuildProjectDirectory" />
+  </Target>
+
+  <Target Name="YarnInstall" BeforeTargets="YarnBuildComponents">
+    <Yarn Command="install --non-interactive" WorkingDirectory="$(YarnWorkingDir)" />
+  </Target>
 
   <!-- /YARN -->
 

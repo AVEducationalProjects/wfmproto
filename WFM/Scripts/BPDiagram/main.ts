@@ -1,5 +1,5 @@
 ﻿import * as d3 from 'd3';
-import { BPGraph, BPEdge, BPNode, BPNodeType } from './model';
+import { BPGraph, BPEdge, BPNode, BPNodeType, GraphDTO } from './model';
 
 enum BPDiagramComponentState { View, AddAction, AddEvent, AddEdge }
 
@@ -516,6 +516,15 @@ class BPDiagramComponent {
 
             diagram.update();
         }
+    }
+
+    public import(graphDTO: GraphDTO) {
+        this.graph.importData(graphDTO);
+        this.update();
+    }
+
+    public export(): GraphDTO {
+        return this.graph.exportData();
     }
 }
 
