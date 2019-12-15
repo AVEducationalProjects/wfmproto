@@ -67,12 +67,12 @@ namespace WFM.Models.Store
                 {
                     Id = x.Node.Id,
                     Estimated = x.CompleteRecord.DateTime.AddMinutes((int)(x.Node.Duration * 60m)),
-                    Name = x.Node.Name
+                    Name = x.Node.Name,
+                    Resolutions = x.Node.Transitions.Select(x=>x.Resolution??"").Distinct().ToList()
                 });
 
             return expectedEvents.ToList();
         }
-
 
         public IList<ActionToDo> GetActionsToDo()
         {
@@ -87,10 +87,17 @@ namespace WFM.Models.Store
                 {
                     Id = x.Node.Id,
                     Estimated = x.CompleteRecord.DateTime.AddMinutes((int)(x.Node.Duration * 60m)),
-                    Name = x.Node.Name
+                    Name = x.Node.Name,
+                    Resolutions = x.Node.Transitions.Select(x=>x.Resolution??"").Distinct().ToList()
                 });
 
             return expectedActions.ToList();
+        }
+
+        public void Complete(Guid nodeId, string resolution)
+        {
+            var eventNode = Diagram.Nodes.Single(x => x.Id == nodeId);
+            Completed.Add(new CompleteRecord { Id = nodeId, DateTime = DateTime.Now, Resolution = resolution });
         }
     }
 }

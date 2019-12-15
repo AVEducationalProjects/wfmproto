@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,5 +11,6 @@ namespace WFM.Repositaries
     {
         Task<IList<BusinessProcessState>> List();
         Task Save(BusinessProcessState businessProcessState);
+        Task<BusinessProcessState> GetById(ObjectId objectId);
     }
 }

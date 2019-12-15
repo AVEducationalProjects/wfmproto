@@ -12,5 +12,7 @@ namespace WFM.Options
         public string Database { get; set; }
 
         public string BusinessProcessCollection { get; set; }
+
+        public string BusinessProcessStateCollection { get; set; }
     }
 }

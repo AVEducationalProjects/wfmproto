@@ -22,7 +22,6 @@ namespace WFM.Repositaries
             BusinessProcesses = database.GetCollection<BusinessProcess>(mongoOptions.Value.BusinessProcessCollection);
         }
 
-
         public async Task<BusinessProcess> GetById(ObjectId id)
         {
             var result = await BusinessProcesses.FindAsync(x => x.Id == id);

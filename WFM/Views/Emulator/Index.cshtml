@@ -1,0 +1,98 @@
+﻿@model IEnumerable<WFM.Models.Store.BusinessProcessState>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<p>
+    <a asp-action="Create">Запустить бизнес-процесс</a>
+</p>
+
+<div class="row">
+
+    @foreach (var item in Model)
+    {
+        <div class="col-3">
+            <div class="card">
+                <div class="card-header">@item.Name</div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var expectedEvent in item.GetExpectedEvents())
+                    {
+                    <li class="list-group-item">
+                        <a href="javascript:complete('@item.Id','@expectedEvent.Id',[@string.Join(",",expectedEvent.Resolutions)])">
+                            <i class="fa fa-bolt"></i>
+                        </a>
+                        @expectedEvent.Name
+                    </li>
+                    }
+                </ul>
+                <ul class="list-group list-group-flush">
+                    @foreach (var actionToDo in item.GetActionsToDo())
+                    {
+                        <li class="list-group-item">
+                            <a href="javascript:complete('@item.Id','@actionToDo.Id',[@string.Join(",",actionToDo.Resolutions)])">
+                                <i class="fa fa-check"></i>
+                            </a>
+                            @actionToDo.Name
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="completeModal" tabindex="-1" role="dialog" aria-labelledby="completeModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Завершить</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Complete">
+                    <input name="businessProcessStateId" type="hidden" />
+                    <input name="nodeId" type="hidden" />
+                    <div class="form-group">
+                        <select class="form-control" name="resolution" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" onclick="sendComplete();">Завершить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        function complete(id, eventId, resolutions) {
+            $("#completeModal input[name='businessProcessStateId']").val(id);
+            $("#completeModal input[name='nodeId']").val(eventId);
+
+            let resolutionControl = $("#completeModal select[name='resolution']");
+            resolutionControl.html("");
+            $.each(resolutions, (idx, resolution) => {
+                resolutionControl.append('<option value="' + resolution + '">' + resolution + '</option>');
+            });
+            resolutionControl.val(resolutions[0]);
+
+            if (resolutions.length > 1) {
+                $("#completeModal").modal('show');
+            } else {
+                sendComplete();
+            }
+        }
+
+        function sendComplete() {
+            $("#completeModal form").submit();
+            $("#completeModal").modal('hide');
+        }
+    </script>
+}

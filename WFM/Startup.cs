@@ -21,6 +21,7 @@ namespace WFM
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IBusinessProcessRepositary, BusinessProcessMongoRepositary>();
+            services.AddScoped<IEmulatorStateRepositary, EmulatorStateMongoRepositary>();
 
             services.AddControllersWithViews();
         }
