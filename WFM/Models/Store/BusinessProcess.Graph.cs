@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WFM.Models.DTO
+namespace WFM.Models.Store
 {
     public partial class BusinessProcess
     {

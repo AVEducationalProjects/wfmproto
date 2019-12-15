@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using WFM.Models;
-using WFM.Models.DTO;
+using WFM.Models.Store;
 using WFM.Repositaries;
 
 namespace WFM.Controllers

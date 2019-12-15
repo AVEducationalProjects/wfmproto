@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MongoDB.Bson;
-using System.Text.Json;
 using System.Threading.Tasks;
+using WFM.Models.Store;
 
 namespace WFM.Models.DTO
 {

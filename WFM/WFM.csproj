@@ -33,7 +33,7 @@
   <Target Name="YarnBuildComponents" Inputs="**\*.ts" Outputs="wwwroot\js\*.js" BeforeTargets="BeforeBuild">
     <Yarn WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Yarn Command="run build-prod" Condition="'$(Configuration)'=='Release'" />
-    <Yarn Command="run build-prod" Condition="'$(Configuration)'=='Debug'"  />
+    <Yarn Command="run build-prod" Condition="'$(Configuration)'=='Debug'" />
   </Target>
 
   <Target Name="YarnInstall" BeforeTargets="YarnBuildComponents">

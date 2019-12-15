@@ -3,8 +3,9 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using WFM.Models.DTO;
 
-namespace WFM.Models.DTO
+namespace WFM.Models.Store
 {
     [ModelBinder(BinderType = typeof(BusinessProcessBinder))]
     public partial class BusinessProcess

@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using WFM.Models.DTO;
+using WFM.Models.Store;
 
 namespace WFM.Repositaries
 {

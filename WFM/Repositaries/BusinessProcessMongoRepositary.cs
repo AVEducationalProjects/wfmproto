@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WFM.Models.DTO;
+using WFM.Models.Store;
 using WFM.Options;
 
 namespace WFM.Repositaries
