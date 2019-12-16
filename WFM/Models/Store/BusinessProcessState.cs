@@ -1,12 +1,7 @@
 ﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using WFM.Models.Store;
 
 namespace WFM.Models.Store
 {
@@ -20,9 +15,10 @@ namespace WFM.Models.Store
             Id = ObjectId.GenerateNewId();
             Name = name;
             Diagram = businessProcess.Diagram;
+            IsCompleted = false;
 
             var statNode = Diagram.Nodes.Single(x => x.Type == BusinessProcess.NodeType.Start);
-            Completed = new List<CompleteRecord> {
+            CompletedStages = new List<CompleteRecord> {
                 new CompleteRecord
                 {
                     Id = statNode.Id,
@@ -36,19 +32,21 @@ namespace WFM.Models.Store
 
         public string Name { get; set; }
 
-        public List<CompleteRecord> Completed { get; set; }
+        public List<CompleteRecord> CompletedStages { get; set; }
 
         public BusinessProcess.Graph Diagram { get; set; }
 
-        private IEnumerable<(BusinessProcess.Transition Transition, CompleteRecord CompleteRecord)> GetTransitionFrontiee()
+        public bool IsCompleted { get; set; }
+
+        private IEnumerable<(BusinessProcess.Transition Transition, CompleteRecord CompleteRecord)> GetTransitionFrontier()
         {
-            var completed = Diagram.Nodes.Where(x => Completed.Any(rec => rec.Id == x.Id));
+            var completed = Diagram.Nodes.Where(x => CompletedStages.Any(rec => rec.Id == x.Id));
             return completed.Select(
                 cn => new
                 {
                     TransitionRecords = cn.Transitions
-                        .Where(t => !Completed.Any(rec => rec.Id == t.Id))
-                        .Select(t => (Transition: t, CompleteRecord: Completed.Single(rec => rec.Id == cn.Id)))
+                        .Where(t => !CompletedStages.Any(rec => rec.Id == t.Id))
+                        .Select(t => (Transition: t, CompleteRecord: CompletedStages.Single(rec => rec.Id == cn.Id)))
                 })
                 .SelectMany(x => x.TransitionRecords)
                 .Where(x => x.Transition.Resolution == x.CompleteRecord.Resolution);
@@ -56,7 +54,7 @@ namespace WFM.Models.Store
 
         public IList<ExpectedEvent> GetExpectedEvents()
         {
-            var transitionFrontier = GetTransitionFrontiee();
+            var transitionFrontier = GetTransitionFrontier();
 
             var nodes = transitionFrontier
                 .Select(x => (x.Transition, x.CompleteRecord, Node: Diagram.Nodes.Single(n => n.Id == x.Transition.Id)));
@@ -76,7 +74,7 @@ namespace WFM.Models.Store
 
         public IList<ActionToDo> GetActionsToDo()
         {
-            var transitionFrontier = GetTransitionFrontiee();
+            var transitionFrontier = GetTransitionFrontier();
 
             var nodes = transitionFrontier
                 .Select(x => (x.Transition, x.CompleteRecord, Node: Diagram.Nodes.Single(n => n.Id == x.Transition.Id)));
@@ -94,10 +92,30 @@ namespace WFM.Models.Store
             return expectedActions.ToList();
         }
 
-        public void Complete(Guid nodeId, string resolution)
+        public void CompleteStage(Guid nodeId, string resolution)
         {
             var eventNode = Diagram.Nodes.Single(x => x.Id == nodeId);
-            Completed.Add(new CompleteRecord { Id = nodeId, DateTime = DateTime.Now, Resolution = resolution });
+            CompletedStages.Add(new CompleteRecord { Id = nodeId, DateTime = DateTime.Now, Resolution = resolution });
+            CheckIfProcessComplete();
+        }
+
+        private void CheckIfProcessComplete()
+        {
+            if(!GetExpectedEvents().Any() && !GetActionsToDo().Any())
+            {
+                CompleteProcess();
+            }
+        }
+
+        public void CompleteProcess()
+        {
+                CompletedStages.Add(
+                    new CompleteRecord { 
+                        Id = Diagram.Nodes.Single(x => x.Type == BusinessProcess.NodeType.End).Id, 
+                        DateTime = DateTime.Now, 
+                        Resolution = "" });
+
+                IsCompleted = true;
         }
     }
 }

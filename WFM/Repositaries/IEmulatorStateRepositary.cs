@@ -10,6 +10,7 @@ namespace WFM.Repositaries
     public interface IEmulatorStateRepositary
     {
         Task<IList<BusinessProcessState>> List();
+        Task<IList<BusinessProcessState>> ListNotComplete();
         Task Save(BusinessProcessState businessProcessState);
         Task<BusinessProcessState> GetById(ObjectId objectId);
     }

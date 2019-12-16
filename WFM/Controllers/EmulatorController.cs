@@ -28,7 +28,7 @@ namespace WFM.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var businessProcessState = await _emulatorStateRepositary.List();
+            var businessProcessState = await _emulatorStateRepositary.ListNotComplete();
             return View(businessProcessState);
         }
 
@@ -63,7 +63,20 @@ namespace WFM.Controllers
                 throw new ArgumentNullException(nameof(nodeId));
 
             var bps = await _emulatorStateRepositary.GetById(new ObjectId(businessProcessStateId));
-            bps.Complete(Guid.Parse(nodeId), resolution);
+            bps.CompleteStage(Guid.Parse(nodeId), resolution);
+            await _emulatorStateRepositary.Save(bps);
+
+            return RedirectToAction("Index");
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> CompleteProcess([FromForm] string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentNullException(nameof(id));
+            
+            var bps = await _emulatorStateRepositary.GetById(new ObjectId(id));
+            bps.CompleteProcess();
             await _emulatorStateRepositary.Save(bps);
 
             return RedirectToAction("Index");

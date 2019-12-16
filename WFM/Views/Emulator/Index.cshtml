@@ -14,16 +14,16 @@
     {
         <div class="col-3">
             <div class="card">
-                <div class="card-header">@item.Name</div>
+                <div class="card-header">@item.Name (<a href="javascript:completeProcess('@item.Id')">Завершить</a> ) </div>
                 <ul class="list-group list-group-flush">
                     @foreach (var expectedEvent in item.GetExpectedEvents())
                     {
-                    <li class="list-group-item">
-                        <a href="javascript:complete('@item.Id','@expectedEvent.Id',[@string.Join(",",expectedEvent.Resolutions)])">
-                            <i class="fa fa-bolt"></i>
-                        </a>
-                        @expectedEvent.Name
-                    </li>
+                        <li class="list-group-item">
+                            <a href="javascript:complete('@item.Id','@expectedEvent.Id',[@string.Join(",",expectedEvent.Resolutions)])">
+                                <i class="fa fa-bolt"></i>
+                            </a>
+                            @expectedEvent.Name
+                        </li>
                     }
                 </ul>
                 <ul class="list-group list-group-flush">
@@ -42,6 +42,13 @@
     }
 
 </div>
+
+<div id="completeProcess" class="hidden">
+    <form asp-action="CompleteProcess">
+        <input type="hidden" name="id" />
+    </form>
+</div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="completeModal" tabindex="-1" role="dialog" aria-labelledby="completeModal" aria-hidden="true">
@@ -70,8 +77,14 @@
     </div>
 </div>
 
+
 @section Scripts{
     <script type="text/javascript">
+        function completeProcess(id) {
+            $("#completeProcess form input[name='id']").val(id);
+            $("#completeProcess form").submit();
+        }
+
         function complete(id, eventId, resolutions) {
             $("#completeModal input[name='businessProcessStateId']").val(id);
             $("#completeModal input[name='nodeId']").val(eventId);

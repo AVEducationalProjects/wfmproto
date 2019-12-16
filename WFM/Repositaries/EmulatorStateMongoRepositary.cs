@@ -26,6 +26,11 @@ namespace WFM.Repositaries
             var result = await BusinessProcessStateCollection.FindAsync(x => x.Id == objectId);
             return result.Single();
         }
+        public async Task<IList<BusinessProcessState>> ListNotComplete()
+        {
+            var result = await BusinessProcessStateCollection.FindAsync(x => x.IsCompleted == false);
+            return result.ToList();
+        }
 
         public async Task<IList<BusinessProcessState>> List()
         {
@@ -41,5 +46,6 @@ namespace WFM.Repositaries
             else
                 await BusinessProcessStateCollection.InsertOneAsync(businessProcessState);
         }
+
     }
 }
