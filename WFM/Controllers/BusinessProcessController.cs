@@ -90,6 +90,7 @@ namespace WFM.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(string id)
         {
             await _businessProcessRepositary.Remove(new ObjectId(id));

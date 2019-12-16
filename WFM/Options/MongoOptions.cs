@@ -14,5 +14,7 @@ namespace WFM.Options
         public string BusinessProcessCollection { get; set; }
 
         public string BusinessProcessStateCollection { get; set; }
+
+        public string ResourceCollection { get; set; }
     }
 }
