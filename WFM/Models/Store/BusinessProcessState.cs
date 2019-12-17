@@ -86,6 +86,7 @@ namespace WFM.Models.Store
                     Id = x.Node.Id,
                     Estimated = x.CompleteRecord.DateTime.AddMinutes((int)(x.Node.Duration * 60m)),
                     Name = x.Node.Name,
+                    Skills = x.Node.Skills,
                     Resolutions = x.Node.Transitions.Select(x=>x.Resolution??"").Distinct().ToList()
                 });
 

@@ -16,5 +16,11 @@ namespace WFM.Options
         public string BusinessProcessStateCollection { get; set; }
 
         public string ResourceCollection { get; set; }
+
+        public string PlanAssigmentsCollection { get; set; }
+
+        public string PlanResourcesCollection { get; set; }
+
+        public string PlanNotAssignedTasksCollection { get; set; }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using WFM.Models.DTO;
 
 namespace WFM.Models.Store
 {
@@ -13,6 +15,7 @@ namespace WFM.Models.Store
 
             public NodeType Type { get; set; }
 
+            [JsonConverter(typeof(DecimalToStringConverter))]
             public decimal Duration { get; set; }
 
             public string Skills { get; set; }

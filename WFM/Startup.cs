@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WFM.Models;
+using WFM.Models.DTO;
 using WFM.Repositaries;
 
 namespace WFM
@@ -23,6 +24,7 @@ namespace WFM
             services.AddScoped<IBusinessProcessRepositary, BusinessProcessMongoRepositary>();
             services.AddScoped<IEmulatorStateRepositary, EmulatorStateMongoRepositary>();
             services.AddScoped<IResourceRepositary, ResourceMongoRepositary>();
+            services.AddScoped<IPlanRepositary, PlanMongoRepositary>();
 
             services.AddControllersWithViews();
         }
