@@ -53,4 +53,7 @@
     <UpToDateCheckInput Remove="webpack.config.dev.js" />
     <UpToDateCheckInput Remove="webpack.config.prod.js" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\js\" />
+  </ItemGroup>
 </Project>
