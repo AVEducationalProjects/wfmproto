@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using WFM.Models.Store;
 using WFM.Repositaries;
+using WFM.Extensions;
 
 namespace WFM.Controllers
 {
@@ -17,7 +18,7 @@ namespace WFM.Controllers
         private readonly IResourceRepositary _resourcesRepositary;
         private readonly IEmulatorStateRepositary _emulatorRepositary;
 
-        public PlaningController(ILogger<PlaningController> logger, 
+        public PlaningController(ILogger<PlaningController> logger,
             IPlanRepositary planRepositary,
             IResourceRepositary resourceRepositary,
             IEmulatorStateRepositary emulatorStateRepositary)
@@ -50,34 +51,44 @@ namespace WFM.Controllers
             var tasks = (await _emulatorRepositary.List()).SelectMany(x => x.GetActionsToDo()).ToList();
             var taskToResource = GetResourcesAvailableForTasks(tasks, plan.Resources);
 
-            foreach (var task in tasks.OrderBy(x=>x.Estimated))
+            foreach (var task in tasks.OrderBy(x => x.Estimated))
             {
                 var resource = plan.GetLeastBusyResource(taskToResource[task]);
                 if (resource == null)
                     plan.NotAssignedTasks.Add(task);
                 else
-                    plan.Assignments.Add(new Plan.Assignment { Id = ObjectId.GenerateNewId(), ResourceId = resource.Id, Task = task });
+                {
+                    (DateTime start, DateTime end) = plan.GetAvailableDateTime(resource).GetWorkWindows((int)(task.Duration * 60));
+                    plan.Assignments.Add(new Plan.Assignment
+                    {
+                        Id = ObjectId.GenerateNewId(),
+                        ResourceId = resource.Id,
+                        Task = task,
+                        Start = start,
+                        End = end
+                    });
+                }
             }
-            
+
             return plan;
         }
 
         private IDictionary<BusinessProcessState.ActionToDo, IList<Resource>> GetResourcesAvailableForTasks(
-            IList<BusinessProcessState.ActionToDo> tasks, 
+            IList<BusinessProcessState.ActionToDo> tasks,
             IList<Resource> resources)
         {
             var result = new Dictionary<BusinessProcessState.ActionToDo, IList<Resource>>();
             foreach (var task in tasks)
             {
                 var availableResources = new List<Resource>();
-                var taskSkillRequirements = task.Skills?.Split(Environment.NewLine).Select(x=>x.Trim()).ToHashSet();
+                var taskSkillRequirements = task.Skills?.Split(Environment.NewLine).Select(x => x.Trim()).ToHashSet();
 
                 foreach (var resource in resources)
                 {
                     var skills = resource.Skills?.Split(Environment.NewLine).Select(x => x.Trim()).ToHashSet();
-                    if ((skills==null && taskSkillRequirements==null)||
-                        (skills!=null && taskSkillRequirements==null)||
-                        (skills!=null && skills.IsSupersetOf(taskSkillRequirements??new HashSet<string>())))
+                    if ((skills == null && taskSkillRequirements == null) ||
+                        (skills != null && taskSkillRequirements == null) ||
+                        (skills != null && skills.IsSupersetOf(taskSkillRequirements ?? new HashSet<string>())))
                         availableResources.Add(resource);
                 }
 

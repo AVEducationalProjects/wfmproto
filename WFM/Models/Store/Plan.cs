@@ -29,7 +29,17 @@ namespace WFM.Models.Store
 
         public Resource GetLeastBusyResource(IList<Resource> resourcelist)
         {
-            return resourcelist.OrderBy(x => this[x.Id].Any()? this[x.Id].Max(task => task.Estimated) : DateTime.Now).FirstOrDefault();
+            return resourcelist.OrderBy(x => GetAvailableDateTime(x)).FirstOrDefault();
+        }
+
+        public DateTime GetAvailableDateTime(Resource resource)
+        {
+            var assigment = Assignments
+                .Where(x => x.ResourceId == resource.Id)
+                .OrderBy(x => x.End)
+                .LastOrDefault();
+
+            return assigment?.End ?? DateTime.Now;
         }
     }
 }

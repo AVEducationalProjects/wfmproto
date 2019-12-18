@@ -84,6 +84,7 @@ namespace WFM.Models.Store
                 .Select(x => new ActionToDo
                 {
                     Id = x.Node.Id,
+                    Duration = x.Node.Duration,
                     Estimated = x.CompleteRecord.DateTime.AddMinutes((int)(x.Node.Duration * 60m)),
                     Name = x.Node.Name,
                     Skills = x.Node.Skills,

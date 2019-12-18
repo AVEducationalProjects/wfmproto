@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using System;
 
 namespace WFM.Models.Store
 {
@@ -11,6 +12,11 @@ namespace WFM.Models.Store
             public ObjectId ResourceId { get; set; }
 
             public BusinessProcessState.ActionToDo Task { get; set; }
+
+            public DateTime Start { get; set; }
+            
+            public DateTime End { get; set; }
+
         }
     }
 }

@@ -11,6 +11,7 @@ namespace WFM.Models.Store
             public string Name { get; internal set; }
             public string Skills { get; set; }
             public DateTime Estimated { get; internal set; }
+            public decimal Duration { get; internal set; }
             public IList<string> Resolutions { get; set; }
         }
     }
