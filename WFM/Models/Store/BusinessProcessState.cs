@@ -66,7 +66,7 @@ namespace WFM.Models.Store
                     Id = x.Node.Id,
                     Estimated = x.CompleteRecord.DateTime.AddMinutes((int)(x.Node.Duration * 60m)),
                     Name = x.Node.Name,
-                    Resolutions = x.Node.Transitions.Select(x=>x.Resolution??"").Distinct().ToList()
+                    Resolutions = x.Node.Transitions.Select(x => x.Resolution ?? "").Distinct().ToList()
                 });
 
             return expectedEvents.ToList();
@@ -88,7 +88,7 @@ namespace WFM.Models.Store
                     Estimated = x.CompleteRecord.DateTime.AddMinutes((int)(x.Node.Duration * 60m)),
                     Name = x.Node.Name,
                     Skills = x.Node.Skills,
-                    Resolutions = x.Node.Transitions.Select(x=>x.Resolution??"").Distinct().ToList()
+                    Resolutions = x.Node.Transitions.Select(x => x.Resolution ?? "").Distinct().ToList()
                 });
 
             return expectedActions.ToList();
@@ -103,7 +103,7 @@ namespace WFM.Models.Store
 
         private void CheckIfProcessComplete()
         {
-            if(!GetExpectedEvents().Any() && !GetActionsToDo().Any())
+            if (!GetExpectedEvents().Any() && !GetActionsToDo().Any())
             {
                 CompleteProcess();
             }
@@ -111,13 +111,15 @@ namespace WFM.Models.Store
 
         public void CompleteProcess()
         {
-                CompletedStages.Add(
-                    new CompleteRecord { 
-                        Id = Diagram.Nodes.Single(x => x.Type == BusinessProcess.NodeType.End).Id, 
-                        DateTime = DateTime.Now, 
-                        Resolution = "" });
+            CompletedStages.Add(
+                new CompleteRecord
+                {
+                    Id = Diagram.Nodes.Single(x => x.Type == BusinessProcess.NodeType.End).Id,
+                    DateTime = DateTime.Now,
+                    Resolution = ""
+                });
 
-                IsCompleted = true;
+            IsCompleted = true;
         }
     }
 }

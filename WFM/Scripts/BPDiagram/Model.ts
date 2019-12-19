@@ -22,6 +22,7 @@ export class BPNode {
 
         this.name = name;
         this.duration = duration;
+        this.skills = skills;
         this.type = type;
     }
 };

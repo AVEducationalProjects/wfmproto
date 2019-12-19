@@ -19,7 +19,7 @@
                     @foreach (var expectedEvent in item.GetExpectedEvents())
                     {
                         <li class="list-group-item">
-                            <a href="javascript:complete('@item.Id','@expectedEvent.Id',[@string.Join(",",expectedEvent.Resolutions)])">
+                            <a href="javascript:complete('@item.Id','@expectedEvent.Id',[@string.Join(",",expectedEvent.Resolutions.Select(x=>$"\"{x}\""))])">
                                 <i class="fa fa-bolt"></i>
                             </a>
                             @expectedEvent.Name

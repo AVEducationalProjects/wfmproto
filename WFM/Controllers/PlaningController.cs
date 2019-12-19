@@ -48,7 +48,7 @@ namespace WFM.Controllers
         {
             var plan = new Plan();
             plan.Resources = await _resourcesRepositary.List();
-            var tasks = (await _emulatorRepositary.List()).SelectMany(x => x.GetActionsToDo()).ToList();
+            var tasks = (await _emulatorRepositary.List()).Where(x=>!x.IsCompleted).SelectMany(x => x.GetActionsToDo()).ToList();
             var taskToResource = GetResourcesAvailableForTasks(tasks, plan.Resources);
 
             foreach (var task in tasks.OrderBy(x => x.Estimated))
@@ -81,11 +81,11 @@ namespace WFM.Controllers
             foreach (var task in tasks)
             {
                 var availableResources = new List<Resource>();
-                var taskSkillRequirements = task.Skills?.Split(Environment.NewLine).Select(x => x.Trim()).ToHashSet();
+                var taskSkillRequirements = task.Skills?.Split(Environment.NewLine).Select(x => x.ToUpper().Trim()).Where(x => x != string.Empty).ToHashSet();
 
                 foreach (var resource in resources)
                 {
-                    var skills = resource.Skills?.Split(Environment.NewLine).Select(x => x.Trim()).ToHashSet();
+                    var skills = resource.Skills?.Split(Environment.NewLine).Select(x => x.ToUpper().Trim()).Where(x => x != string.Empty).ToHashSet();
                     if ((skills == null && taskSkillRequirements == null) ||
                         (skills != null && taskSkillRequirements == null) ||
                         (skills != null && skills.IsSupersetOf(taskSkillRequirements ?? new HashSet<string>())))

@@ -382,7 +382,8 @@ class BPDiagramComponent {
                         .attr("class", "form-control")
                         .on("input", function () {
                             diagram.selectedNode.skills = this.value;
-                        });
+                        })
+                        .text(node.skills);
                 }
 
                 form.append("hr");
